@@ -17,7 +17,8 @@ function App() {
           <HomePage />
         </Route>
         <Route path="/">
-          <LoginPage />
+          {/* <LoginPage /> */}
+          <VotePage />
         </Route>
       </Switch>
     </Router>
