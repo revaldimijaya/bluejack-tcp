@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 function NavBar() {
     return (
         <div>
@@ -34,7 +35,7 @@ function NavBar() {
                                                 <a href="/" className="link-secondary text-decoration-none col-lg-12">
                                                     <div className="col-lg-12 d-flex align-items-center">
                                                         <div className="col-lg-4 d-flex justify-content-end p-2">
-                                                            <FontAwesomeIcon icon="faSignOutAlt" />
+                                                            <FontAwesomeIcon icon="sign-out-alt" />
                                                             <i className="fas fa-sign-out-alt"></i>
                                                         </div>
                                                         <div className="col-lg-8 d-flex justify-content-start m-0 p-0">
