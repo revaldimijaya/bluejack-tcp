@@ -6,23 +6,27 @@ import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import react, { useEffect, useState } from "react"
-import { useCookies } from 'react-cookie'
+import Cookies from 'universal-cookie';
 
 library.add(fab, faSignOutAlt)
 
 // const [cookies, setCookie] = useCookies(['user'])
-
+const cookies = new Cookies();
 
 function setUser(user) {
   // sessionStorage.setItem('user', JSON.stringify(user));
   let expires = new Date()
-  expires.setTime(expires.getTime() + (2 * 1000))
-  // setCookie('user', user, {path: '/'.expires})
+  expires.setTime(expires.getTime() + (100 * 1000))
+  // // setCookie('user', user, {path: '/'.expires})
+  cookies.set('user', user, { path: '/', expires: expires} )
 }
 
 function getUser() {
-  const userString = sessionStorage.getItem('user');
-  const user = JSON.parse(userString);
+  
+  const userString = cookies.get('user');
+  console.log(userString);
+  if(userString == undefined) return;
+  const user = userString;
   return user
 }
 
@@ -33,7 +37,7 @@ function App() {
     return <LoginPage setUser={setUser} />
   }
 
-  console.log(user)
+  console.log(user["User"]["UserName"])
 
   return (
     <Router>
