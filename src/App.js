@@ -8,33 +8,58 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import react, { useEffect, useState } from "react"
 import Cookies from 'universal-cookie';
+import axios from 'axios';
 
 library.add(fab, faSignOutAlt)
 
-const cookies = new Cookies();
-
 function setUser(user) {
-  let expires = new Date()
-  expires.setTime(expires.getTime() + (100 * 1000))  
-  cookies.set('user', user, { path: '/', expires: expires} )
-  
+  localStorage.setItem('user', JSON.stringify(user))
 }
 
 function getUser() {
-  const userString = cookies.get('user');
-  console.log(userString);
-  if(userString === undefined) return;
+  var userString = localStorage.getItem('user')
+  userString = JSON.parse(userString)
   return userString
 }
 
 function App() {
-  // const user = getUser();
+  const user = getUser();
+ 
+  
+  if(!user) {
+    return <LoginPage setUser={setUser} />
+  }
 
-  // if(!user) {
+  const handleToken = async (token) => {
+    const ax = await axios.get(`https://laboratory.binus.ac.id/lapi/api/Binusmaya/Me`, {
+        headers:{
+            authorization: `Bearer ${token}`
+        }
+    }).then(res => {
+            console.log(res)
+            return res;
+    }).catch(err => {return null})
+    return ax;
+  }
+  var result = handleToken(user["Token"]["token"])
+  
+  if(result){
+    // console.log(result)
+    // window.location.href = '/home'
+  } else {
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+  }
+
+  // var date = new Date(user["Token"]["expires"]);
+  // var currDate = new Date();
+  // var diff = currDate - date;
+  // if(diff >= 0){
+  //   console.log("masuk delete")
+  //   localStorage.removeItem('user')
   //   return <LoginPage setUser={setUser} />
   // }
-
-  // console.log(user["User"]["UserName"])
+  
 
   return (
     <Router>

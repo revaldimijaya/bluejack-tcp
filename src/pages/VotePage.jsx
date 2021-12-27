@@ -48,7 +48,7 @@ function VotePage(){
                     </div>
                     </div>
                 </div>
-                </div>
+            </div>
 
         </div>
     )

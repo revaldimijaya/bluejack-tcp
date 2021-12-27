@@ -1,6 +1,8 @@
 import react, { useEffect, useState } from "react"
 import {User} from '../models/User'
-
+import { Redirect, Route } from "react-router";
+import { event } from "jquery";
+import axios from 'axios';
 
 function LoginPage({setUser}) {
     const [username, setUserName] = useState();
@@ -22,9 +24,13 @@ function LoginPage({setUser}) {
             },
             body: JSON.stringify(credentials)
           })
-        .then(res => res.json())
-        // .then((data) => console.log(data))
+        .then((res) => res.json())
+        .catch((error) =>{
+            return null;
+        })
+        
     }
+    
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -32,14 +38,44 @@ function LoginPage({setUser}) {
           username,
           password
         });
-        console.log(data)
-  
-        setUser(data);
-      }
+        if(data){
+            setUser(data);
+            // return <Redirect to='/home'  />
+            window.location.href = "/home"
+        } 
+    }
+
+    const handleToken = async (token) => {
+        const ax = await axios.get(`https://laboratory.binus.ac.id/lapi/api/Binusmaya/Me`, {
+            headers:{
+                authorization: `Bearer ${token}`
+            }
+        }).then(res => {
+                console.log(res)
+                return res;
+        }).catch(err => {return null})
+        return ax;
+    }
 
     useEffect(()=>{
         
     }, [])
+
+
+    var auth = localStorage.getItem('user');
+    
+    if(auth !== null){
+        var authJson = JSON.parse(auth)
+        if(authJson["Token"]["expires"] !== null){
+            var result = handleToken(authJson["Token"]["token"])
+            if(result){
+                window.location.href = '/home'
+            } else {
+                localStorage.removeItem('user')
+                window.location.href = '/login'
+            }
+        }
+    } 
     return (
         
         <div className="d-flex justify-content-center align-items-center">
