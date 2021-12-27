@@ -10,32 +10,28 @@ import Cookies from 'universal-cookie';
 
 library.add(fab, faSignOutAlt)
 
-// const [cookies, setCookie] = useCookies(['user'])
 const cookies = new Cookies();
 
 function setUser(user) {
-  // sessionStorage.setItem('user', JSON.stringify(user));
   let expires = new Date()
-  expires.setTime(expires.getTime() + (100 * 1000))
-  // // setCookie('user', user, {path: '/'.expires})
+  expires.setTime(expires.getTime() + (100 * 1000))  
   cookies.set('user', user, { path: '/', expires: expires} )
+  
 }
 
 function getUser() {
-  
   const userString = cookies.get('user');
   console.log(userString);
-  if(userString == undefined) return;
-  const user = userString;
-  return user
+  if(userString === undefined) return;
+  return userString
 }
 
 function App() {
   const user = getUser();
 
-  if(!user) {
-    return <LoginPage setUser={setUser} />
-  }
+  // if(!user) {
+  //   return <LoginPage setUser={setUser} />
+  // }
 
   console.log(user["User"]["UserName"])
 
