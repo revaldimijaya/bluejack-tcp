@@ -42,9 +42,13 @@ function LoginPage({setUser}) {
     }, [])
     return (
         
-        <div className="d-flex bg-dark w-100 h-100">
+        <div className="d-flex justify-content-center align-items-center">
             <form onSubmit={handleSubmit}>
-                <div className="d-flex flex-column justify-content-center justify-items-center position-absolute top-50 left-50 p-5" style={{transform:"translate(150%, -50%)"}}>
+                <div className="d-flex flex-column justify-content-center align-items-center shadow-sm p-3 mb-5 bg-white rounded">
+                    <div className="form-group p-1">
+                        <img src={require('../images/logo-binus.png')} alt="" srcset="" />
+                    </div>
+
                     <div className="form-group p-1">
                         <input type="text" name="username" className="form-control" placeholder="Username" onChange={e => setUserName(e.target.value)}/>
                     </div>

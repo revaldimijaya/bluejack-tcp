@@ -6,11 +6,18 @@ import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import react, { useEffect, useState } from "react"
+import { useCookies } from 'react-cookie'
 
 library.add(fab, faSignOutAlt)
 
+// const [cookies, setCookie] = useCookies(['user'])
+
+
 function setUser(user) {
-  sessionStorage.setItem('user', JSON.stringify(user));
+  // sessionStorage.setItem('user', JSON.stringify(user));
+  let expires = new Date()
+  expires.setTime(expires.getTime() + (2 * 1000))
+  // setCookie('user', user, {path: '/'.expires})
 }
 
 function getUser() {
