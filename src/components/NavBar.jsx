@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+const handleSignOut = async e => {
+    e.preventDefault()
+    console.log('kepanggil')
+    localStorage.removeItem('user')
+    window.location.href = "/login"
+}
+
 function NavBar() {
     return (
         <div>
@@ -32,17 +39,19 @@ function NavBar() {
                                         </div>
                                         <div className="col-lg-1">
                                             <strong className="col-lg-12 d-flex justify-content-end">
-                                                <a href="/" className="link-secondary text-decoration-none col-lg-12">
+                                                <div className="link-secondary text-decoration-none col-lg-12 sign-out-btn" onClick={handleSignOut}>
                                                     <div className="col-lg-12 d-flex align-items-center">
                                                         <div className="col-lg-4 d-flex justify-content-end p-2">
                                                             <FontAwesomeIcon icon="sign-out-alt" />
                                                             <i className="fas fa-sign-out-alt"></i>
                                                         </div>
                                                         <div className="col-lg-8 d-flex justify-content-start m-0 p-0">
-                                                            Sign Out
+                                                            {/* <form onSubmit={handleClick} action="" method="get"> */}
+                                                                Sign Out
+                                                            {/* </form> */}
                                                         </div>
                                                     </div>
-                                                </a>
+                                                </div>
                                             </strong>
                                         </div>
                                     </div>
@@ -65,16 +74,16 @@ function NavBar() {
                                     <div className="col-lg-6 d-flex justify-content-end d-none d-lg-flex">
                                         <div className="col-lg-2">
                                             <strong>
-                                                <a href="/" className="link-secondary text-decoration-none">
+                                                <div className="link-secondary text-decoration-none sign-out-btn" onClick={handleSignOut}>
                                                     <div className="row d-flex align-items-center">
                                                         <div className="col-lg-4 d-flex justify-content-end">
                                                             <i className="fas fa-sign-out-alt"></i>
                                                         </div>
-                                                        <div className="col-lg-8 d-flex justify-content-start m-0 p-0">
+                                                        <div className="col-lg-8 d-flex justify-content-start m-0 p-0"> 
                                                             Sign Out
                                                         </div>
                                                     </div>
-                                                </a>
+                                                </div>
                                             </strong>
                                         </div>
                                     </div>

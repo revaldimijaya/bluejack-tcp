@@ -10,6 +10,7 @@ function HomePage() {
     const [courses, setCourses] = useState([])
 
     const fetchCourse = async() => {
+        console.log('called')
         const params = {
             'semesterId': semesterId,
             'binusianNumber': user['User']['UserName']
@@ -23,7 +24,9 @@ function HomePage() {
         return result
     } 
 
-    fetchCourse()
+    useEffect(()=>{
+        fetchCourse()
+    }, [])
 
     return (
         <div>
