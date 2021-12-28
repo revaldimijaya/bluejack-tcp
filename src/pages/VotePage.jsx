@@ -198,10 +198,19 @@ function VotePage(){
                             </Accordion.Header>
                             <Accordion.Body>
                                 {/* if (!showArea[index]) { */}
-                                    <div onClick={
+                                    <div>
+                                        <textarea name="" id="" cols="30" rows="10">
+                                            {vote.description}
+                                        </textarea>
+                                        <div>
+                                            <Button variant="primary" onClick={(e)=>editVote(e, vote.id, "update bro")}>Update</Button>
+                                            <Button variant="danger" onClick={(e)=>removeVote(e, vote.id)}>Delete</Button> 
+                                        </div>
+                                    </div>
+                                    {/* <div onClick={
                                         // update_show_state(index)
                                         console.log('tolong')
-                                    }>{vote.description}</div>
+                                    }>{vote.description}</div> */}
                                 {/* } */}
                                 {/* else{
                                     <div>
