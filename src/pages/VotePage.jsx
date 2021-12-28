@@ -89,9 +89,24 @@ function VotePage(){
         }
     `;
 
-    const [create_vote, { data, loading, error }] = useMutation(CREATE_VOTE)
-    const [update_vote, update_info] = useMutation(UPDATE_VOTE)
-    const [delete_vote, delete_info] = useMutation(DELETE_VOTE)
+    const [create_vote, { data, loading, error }] = useMutation(CREATE_VOTE,{
+        refetchQueries:[{query: GET_VOTE, variables:{
+            studentID: "11",
+            groupID: "12"
+        }}]
+    })
+    const [update_vote, update_info] = useMutation(UPDATE_VOTE,{
+        refetchQueries:[{query: GET_VOTE, variables:{
+            studentID: "11",
+            groupID: "12"
+        }}]
+    })
+    const [delete_vote, delete_info] = useMutation(DELETE_VOTE,{
+        refetchQueries:[{query: GET_VOTE, variables:{
+            studentID: "11",
+            groupID: "12"
+        }}]
+    })
     const vote_result = useQuery(GET_VOTE, {
         variables:{
             studentID: "11",
