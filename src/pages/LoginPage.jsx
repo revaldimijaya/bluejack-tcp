@@ -1,7 +1,6 @@
 import react, { useEffect, useState } from "react"
 import {User} from '../models/User'
 import { Redirect, Route } from "react-router";
-import { event } from "jquery";
 import axios from 'axios';
 
 function LoginPage({setUser}) {
