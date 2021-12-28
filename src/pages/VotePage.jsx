@@ -2,6 +2,7 @@ import { Accordion, Button } from "react-bootstrap"
 import NavBar from "../components/NavBar"
 import {gql, useQuery, useMutation} from '@apollo/client'
 import { useState } from "react"
+import $ from 'jquery'
 
 function VotePage(){
     const [votes, setVotes] = useState([
@@ -114,6 +115,11 @@ function VotePage(){
         }
     })
 
+    const handleClick = async(idx) => {
+        console.log(idx)
+        console.log('testing ini kepanggil')
+    }
+
     if (error) return `Submission error! ${error.message}`;
 
     if(vote_result.loading || loading || update_info.loading || delete_info.loading){
@@ -198,10 +204,12 @@ function VotePage(){
                             </Accordion.Header>
                             <Accordion.Body>
                                 {/* if (!showArea[index]) { */}
-                                    <div onClick={
-                                        // update_show_state(index)
-                                        console.log('tolong')
-                                    }>{vote.description}</div>
+                                    <div className="btn-show-txt-area" onClick={() => handleClick(index)}>
+                                        <div>
+                                            {vote.description}
+                                        </div>
+                                    </div>
+                                        
                                 {/* } */}
                                 {/* else{
                                     <div>
