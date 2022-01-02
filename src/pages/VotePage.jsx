@@ -16,8 +16,9 @@ function VotePage(){
     const user = JSON.parse(storage)
     const semesterId = 'e22236e3-72ff-4786-b4ac-b33c9c7fc82a'
     const url = 'https://laboratory.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
-    const [course, setCourse] = useState()
-    const [votes, setVotes] = useState()
+    const [course, setCourse] = useState([])
+    const [votes, setVotes] = useState([])
+    var students
 
     const fetchCourse = async() => {
         console.log('called')
@@ -28,10 +29,9 @@ function VotePage(){
 
         const result = await axios.get(url, { params })
             .then((res) => {
-                setCourse(res.data.filter(function(data){
-                    return data.StudentGroupDetail.Group.Id === "004428a3-2d9c-eb11-90f0-d8d385fce79e"
-                })[0])
-                // console.log(res.data)
+                // setCourse(res.data.filter(function(data){
+                //     return data.StudentGroupDetail.Group.Id === "004428a3-2d9c-eb11-90f0-d8d385fce79e"
+                // })[0])
                 console.log(course)
             })
             .catch((error) => {}
@@ -44,40 +44,42 @@ function VotePage(){
         fetchCourse()
     }, [])
 
-    const submitVote = (event) => {
-        event.preventDefault();
-        console.log(votes)
-        create_vote({
-            variables:{
-                groupID: 12,
-                student_voted: 11,
-                studentID_voter:13,
-                desc: "test desc"
-            }
-        });
-        
-    }
+    
 
-    const editVote = (event, id, index) => {
-        event.preventDefault();
-        let desc = $('.txt-area-' + index).val()
-        update_vote({
-            variables:{
-                id: id,
-                description: desc
-            }
-        });
+    // const submitVote = (event) => {
+    //     event.preventDefault();
+    //     console.log(votes)
+    //     create_vote({
+    //         variables:{
+    //             groupID: 12,
+    //             student_voted: 11,
+    //             studentID_voter:13,
+    //             desc: "test desc"
+    //         }
+    //     });
         
-    }
-    const removeVote = (event, id) => {
-        event.preventDefault();
-        delete_vote({
-            variables:{
-                id: id
-            }
-        });
+    // }
+
+    // const editVote = (event, id, index) => {
+    //     event.preventDefault();
+    //     let desc = $('.txt-area-' + index).val()
+    //     update_vote({
+    //         variables:{
+    //             id: id,
+    //             description: desc
+    //         }
+    //     });
         
-    }
+    // }
+    // const removeVote = (event, id) => {
+    //     event.preventDefault();
+    //     delete_vote({
+    //         variables:{
+    //             id: id
+    //         }
+    //     });
+        
+    // }
 
     // const update_show_state = (index) => {
     //     setShowArea(flag=>flag.map((x,idx)=>idx === index ? !x : x))
@@ -120,30 +122,30 @@ function VotePage(){
         }
     `;
 
-    const [create_vote, { data, loading, error }] = useMutation(CREATE_VOTE,{
-        refetchQueries:[{query: GET_VOTE, variables:{
-            studentID: "11",
-            groupID: "12"
-        }}]
-    })
-    const [update_vote, update_info] = useMutation(UPDATE_VOTE,{
-        refetchQueries:[{query: GET_VOTE, variables:{
-            studentID: "11",
-            groupID: "12"
-        }}]
-    })
-    const [delete_vote, delete_info] = useMutation(DELETE_VOTE,{
-        refetchQueries:[{query: GET_VOTE, variables:{
-            studentID: "11",
-            groupID: "12"
-        }}]
-    })
-    const vote_result = useQuery(GET_VOTE, {
-        variables:{
-            studentID: "11",
-            groupID: "12"
-        }
-    })
+    // const [create_vote, { data, loading, error }] = useMutation(CREATE_VOTE,{
+    //     refetchQueries:[{query: GET_VOTE, variables:{
+    //         studentID: "11",
+    //         groupID: "12"
+    //     }}]
+    // })
+    // const [update_vote, update_info] = useMutation(UPDATE_VOTE,{
+    //     refetchQueries:[{query: GET_VOTE, variables:{
+    //         studentID: "11",
+    //         groupID: "12"
+    //     }}]
+    // })
+    // const [delete_vote, delete_info] = useMutation(DELETE_VOTE,{
+    //     refetchQueries:[{query: GET_VOTE, variables:{
+    //         studentID: "11",
+    //         groupID: "12"
+    //     }}]
+    // })
+    // const vote_result = useQuery(GET_VOTE, {
+    //     variables:{
+    //         studentID: "11",
+    //         groupID: "12"
+    //     }
+    // })
 
     const handleClick = async(idx) => {
         // console.log($('.btn-show-txt-area-' + idx).children().is('div'))
@@ -155,13 +157,13 @@ function VotePage(){
         }
     }
 
-    if (error) return `Submission error! ${error.message}`;
+    // if (error) return `Submission error! ${error.message}`;
 
-    if(vote_result.loading || loading || update_info.loading || delete_info.loading){
-        return <div>Loading..</div>
-    } 
+    // if(vote_result.loading || loading || update_info.loading || delete_info.loading){
+    //     return <div>Loading..</div>
+    // } 
 
-    if (vote_result.error) return `Fetch error! ${vote_result.error.message}`;    
+    // if (vote_result.error) return `Fetch error! ${vote_result.error.message}`;    
 
     // const characters = data.charactersByIds
     // if (characters[0].id == null){
@@ -171,13 +173,14 @@ function VotePage(){
     //         </div>
     //     )
     // }
-
-    var students = course.StudentGroupDetail.Group.Students
-    students.forEach(function (student) {
-        student.up = false
-        student.description = ""
-    });
-    setVotes(students)
+    // students = course.StudentGroupDetail.Group.Students
+    // students.forEach(function (student) {
+    //     student.up = false
+    //     student.description = ""
+    // });
+    // setVotes(students)
+    setCourse("testing")
+    console.log(course)
     return(
         <div >
             <NavBar />
