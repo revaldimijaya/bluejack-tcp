@@ -17,7 +17,10 @@ function HomePage() {
         }
 
         const result = await axios.get(url, { params })
-            .then((res) => setCourses(res.data))
+            .then((res) => {
+                setCourses(res.data)
+                console.log(res.data)
+            })
             .catch((error) => {}
         ) 
 
@@ -33,6 +36,8 @@ function HomePage() {
             <NavBar />
             <div className="container d-flex justify-content-evenly align-items-stretch flex-wrap mt-4">
                 {courses?.map(course=> {
+                    const groupId = course["StudentGroupDetail"]["Group"]["Id"];
+                    const url = `/vote/${groupId}`;
                     return  <div className="card mb-4 mt-4" style={{ width: '45%' }} key={course.CourseCode}>
                                 <div className="card-body">
                                     <h5 className="card-title">{course.CourseCode} - {course.ClassName} </h5>

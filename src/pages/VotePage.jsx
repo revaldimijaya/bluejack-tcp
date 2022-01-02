@@ -1,18 +1,48 @@
 import { Accordion, Button } from "react-bootstrap"
 import NavBar from "../components/NavBar"
 import {gql, useQuery, useMutation} from '@apollo/client'
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from 'axios'
 import $ from 'jquery'
 
 function VotePage(){
-    const [votes, setVotes] = useState([
-        {student_id: "2301873473", up: false, description: ""},
-        {student_id: "2323444422", up: false, description: ""},
-        {student_id: "2344233424", up: false, description: ""}
-    ]);
+    // const [votes, setVotes] = useState([
+    //     {student_id: "2301873473", up: false, description: ""},
+    //     {student_id: "2323444422", up: false, description: ""},
+    //     {student_id: "2344233424", up: false, description: ""}
+    // ]);
 
-    // const [showArea, setShowArea] = useState([])
-    // setShowArea([false,false,false])
+    const storage = localStorage.getItem('user')
+    const user = JSON.parse(storage)
+    const semesterId = 'e22236e3-72ff-4786-b4ac-b33c9c7fc82a'
+    const url = 'https://laboratory.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
+    const [course, setCourse] = useState()
+    const [votes, setVotes] = useState()
+
+    const fetchCourse = async() => {
+        console.log('called')
+        const params = {
+            'semesterId': semesterId,
+            'binusianNumber': user['User']['UserName']
+        }
+
+        const result = await axios.get(url, { params })
+            .then((res) => {
+                setCourse(res.data.filter(function(data){
+                    return data.StudentGroupDetail.Group.Id === "004428a3-2d9c-eb11-90f0-d8d385fce79e"
+                })[0])
+                // console.log(res.data)
+                console.log(course)
+            })
+            .catch((error) => {}
+        ) 
+
+        return result
+    } 
+
+    useEffect(()=>{
+        fetchCourse()
+    }, [])
 
     const submitVote = (event) => {
         event.preventDefault();
@@ -64,23 +94,22 @@ function VotePage(){
     `;
 
     const UPDATE_VOTE = gql `
-        mutation updateVote($id: ID!, $description: String!){
-            updateVote(id: $id, input:{
+        mutation updateVote($voted: ID!, $voter:ID!, $description: String!){
+            updateVote(studentIDVoted: $voted,studentIDVoter: $voter, input:{
             description: $description
             })
         }
     `;
 
     const DELETE_VOTE = gql`
-        mutation deleteVote($id: ID!){
-            deleteVote(id: $id)
+        mutation deleteVote($voted: ID!, $voter: ID!){
+            deleteVote(studentIDVoted: $voted, studentIDVoter: $voter)
         }
     `;
 
     const GET_VOTE = gql`
         query getVote($studentID: String!, $groupID: String!){
             votes(studentID: $studentID, groupID: $groupID){
-            id
             groupID
             studentID_voted
             studentID_voter
@@ -117,7 +146,6 @@ function VotePage(){
 
     const handleClick = async(idx) => {
         console.log(idx)
-        console.log('testing ini kepanggil')
     }
 
     if (error) return `Submission error! ${error.message}`;
@@ -137,41 +165,45 @@ function VotePage(){
     //     )
     // }
 
+    var students = course.StudentGroupDetail.Group.Students
+    students.forEach(function (student) {
+        student.up = false
+        student.description = ""
+    });
+    setVotes(students)
     return(
         <div>
             <NavBar />
             <form onSubmit={submitVote}>
             <Accordion defaultActiveKey="0">
-                {votes.map((v,index) =>{
+                {students.map((s,index) =>{
                     return (
-                        <Accordion.Item eventKey={index} key={v.student_id}>
+                        <Accordion.Item eventKey={index} key={s.StudentNumber}>
                             <Accordion.Header>
                                 <div className="d-flex justify-content-between w-100">
                                     <div>
-                                        <img src="" alt="wdawawd" />
-                                        <div>{v.student_id}</div>
+                                        <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
+                                        <div>{s.Name}</div>
                                     </div>
                                     <div>
                                         <label htmlFor="">UP</label>
-                                        <input type="checkbox" checked={v.up} id="" onChange={(e)=>{
-                                            setVotes((currentVote)=> currentVote.map(x => x.student_id === v.student_id ? {
+                                        <input type="checkbox" checked={s.up} id="" onChange={(e)=>{
+                                            setVotes((currentVote)=> currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
                                                 ...x,
                                                 up : e.target.checked
                                             } : x))
-                                            // e.target.value
                                         }}/>
                                     </div>
                                 </div>
                             </Accordion.Header>
                             <Accordion.Body>
                                 <textarea className="w-100" name="" id="" cols="30" rows="10" onChange={(e)=>{
-                                    setVotes((currentVote)=> currentVote.map(x => x.student_id === v.student_id ? {
+                                    setVotes((currentVote)=> currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
                                         ...x,
                                         description : e.target.value
                                     } : x))
-                                    // e.target.value
                                 }} placeholder="Description">
-                                    {v.description}
+                                    {s.description}
                                 </textarea>
                             </Accordion.Body>
                         </Accordion.Item>
