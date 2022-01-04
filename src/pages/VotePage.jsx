@@ -1,11 +1,11 @@
 import { Accordion, Button } from "react-bootstrap"
 import NavBar from "../components/NavBar"
-import {gql, useQuery, useMutation} from '@apollo/client'
+import { gql, useQuery, useMutation } from '@apollo/client'
 import { useState, useEffect } from "react"
 import axios from 'axios'
 import $ from 'jquery'
 
-function VotePage(){
+function VotePage() {
     // const [votes, setVotes] = useState([
     //     {student_id: "2301873473", up: false, description: ""},
     //     {student_id: "2323444422", up: false, description: ""},
@@ -16,70 +16,81 @@ function VotePage(){
     const user = JSON.parse(storage)
     const semesterId = 'e22236e3-72ff-4786-b4ac-b33c9c7fc82a'
     const url = 'https://laboratory.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
-    const [course, setCourse] = useState([])
+    const [course, setCourse] = useState()
     const [votes, setVotes] = useState([])
-    var students
+    const [axiosWait, setAxiosWait] = useState(false)
 
-    const fetchCourse = async() => {
+    const fetchCourse = async () => {
         console.log('called')
         const params = {
             'semesterId': semesterId,
             'binusianNumber': user['User']['UserName']
         }
-
-        const result = await axios.get(url, { params })
+        setAxiosWait(true)
+        await axios.get(url, { params })
             .then((res) => {
-                // setCourse(res.data.filter(function(data){
-                //     return data.StudentGroupDetail.Group.Id === "004428a3-2d9c-eb11-90f0-d8d385fce79e"
-                // })[0])
-                console.log(course)
+                setCourse(res.data.filter(function (data) {
+                    return data.StudentGroupDetail.Group.Id === "004428a3-2d9c-eb11-90f0-d8d385fce79e"
+                })[0])
+                setAxiosWait(false)
             })
-            .catch((error) => {}
-        ) 
+            .catch((error) => { }
+            )
+    }
 
-        return result
-    } 
-
-    useEffect(()=>{
+    useEffect(() => {
         fetchCourse()
     }, [])
 
-    
+    useEffect(() => {
+        if(course != undefined){
+            let students = course.StudentGroupDetail.Group.Students
+            students.forEach(function (student) {
+                student.up = false
+                student.description = ""
+            });
+            setVotes(students)
+        }
+    }, [course])
 
-    // const submitVote = (event) => {
-    //     event.preventDefault();
-    //     console.log(votes)
-    //     create_vote({
-    //         variables:{
-    //             groupID: 12,
-    //             student_voted: 11,
-    //             studentID_voter:13,
-    //             desc: "test desc"
-    //         }
-    //     });
-        
-    // }
+    const submitVote = (event) => {
+        event.preventDefault()
+        votes.forEach((vote)=>{
+            if(vote.up){
+                create_vote({
+                    variables: {
+                        groupID: course.StudentGroupDetail.Group.Id,
+                        student_voted: vote.StudentNumber,
+                        studentID_voter: user['User']['UserName'],
+                        desc: vote.description
+                    }
+                });
+            }
+        })   
+    }
 
-    // const editVote = (event, id, index) => {
-    //     event.preventDefault();
-    //     let desc = $('.txt-area-' + index).val()
-    //     update_vote({
-    //         variables:{
-    //             id: id,
-    //             description: desc
-    //         }
-    //     });
-        
-    // }
-    // const removeVote = (event, id) => {
-    //     event.preventDefault();
-    //     delete_vote({
-    //         variables:{
-    //             id: id
-    //         }
-    //     });
-        
-    // }
+    const editVote = (event, id, index) => {
+        event.preventDefault();
+        let desc = $('.txt-area-' + index).val()
+        update_vote({
+            variables: {
+                voted: id,
+                voter: user['User']['UserName'],
+                description: desc
+            }
+        });
+
+    }
+    const removeVote = (event, id) => {
+        event.preventDefault();
+        delete_vote({
+            variables: {
+                voted: id,
+                voter: user['User']['UserName']
+            }
+        });
+
+    }
 
     // const update_show_state = (index) => {
     //     setShowArea(flag=>flag.map((x,idx)=>idx === index ? !x : x))
@@ -96,9 +107,9 @@ function VotePage(){
         }
     `;
 
-    const UPDATE_VOTE = gql `
+    const UPDATE_VOTE = gql`
         mutation updateVote($voted: ID!, $voter:ID!, $description: String!){
-            updateVote(studentIDVoted: $voted,studentIDVoter: $voter, input:{
+            updateVote(studentID_voted: $voted,studentID_voter: $voter, input:{
             description: $description
             })
         }
@@ -106,50 +117,65 @@ function VotePage(){
 
     const DELETE_VOTE = gql`
         mutation deleteVote($voted: ID!, $voter: ID!){
-            deleteVote(studentIDVoted: $voted, studentIDVoter: $voter)
+            deleteVote(studentID_voted: $voted, studentID_voter: $voter)
         }
     `;
 
     const GET_VOTE = gql`
         query getVote($studentID: String!, $groupID: String!){
             votes(studentID: $studentID, groupID: $groupID){
-            groupID
-            studentID_voted
-            studentID_voter
-            description
-            date
+                votes{
+                    groupID
+                    studentID_voted
+                    studentID_voter
+                    description
+                    date
+                }
+                re_voted{
+                    groupID
+                    studentID_voted
+                    studentID_voter
+                    description
+                    date
+                }
             }
         }
     `;
 
-    // const [create_vote, { data, loading, error }] = useMutation(CREATE_VOTE,{
-    //     refetchQueries:[{query: GET_VOTE, variables:{
-    //         studentID: "11",
-    //         groupID: "12"
-    //     }}]
-    // })
-    // const [update_vote, update_info] = useMutation(UPDATE_VOTE,{
-    //     refetchQueries:[{query: GET_VOTE, variables:{
-    //         studentID: "11",
-    //         groupID: "12"
-    //     }}]
-    // })
-    // const [delete_vote, delete_info] = useMutation(DELETE_VOTE,{
-    //     refetchQueries:[{query: GET_VOTE, variables:{
-    //         studentID: "11",
-    //         groupID: "12"
-    //     }}]
-    // })
-    // const vote_result = useQuery(GET_VOTE, {
-    //     variables:{
-    //         studentID: "11",
-    //         groupID: "12"
-    //     }
-    // })
+    const [create_vote, { data, loading, error }] = useMutation(CREATE_VOTE, {
+        refetchQueries: [{
+            query: GET_VOTE, variables: {
+                studentID: user['User']['UserName'],
+                groupID: course?.StudentGroupDetail.Group.Id
+            }
+        }]
+    })
+    const [update_vote, update_info] = useMutation(UPDATE_VOTE, {
+        refetchQueries: [{
+            query: GET_VOTE, variables: {
+                studentID: user['User']['UserName'],
+                groupID: course?.StudentGroupDetail.Group.Id
+            }
+        }]
+    })
+    const [delete_vote, delete_info] = useMutation(DELETE_VOTE, {
+        refetchQueries: [{
+            query: GET_VOTE, variables: {
+                studentID: user['User']['UserName'],
+                groupID: course?.StudentGroupDetail.Group.Id
+            }
+        }]
+    })
+    const vote_result = useQuery(GET_VOTE, {
+        variables: {
+            studentID: user['User']['UserName'],
+            groupID: course?.StudentGroupDetail.Group.Id
+        }
+    })
 
-    const handleClick = async(idx) => {
+    const handleClick = async (idx) => {
         // console.log($('.btn-show-txt-area-' + idx).children().is('div'))
-        if($('.btn-show-txt-area-' + idx).children().is('div')) {
+        if ($('.btn-show-txt-area-' + idx).children().is('div')) {
             let value = $('.btn-show-txt-area-' + idx).find('div').text()
             $('.btn-show-txt-area-' + idx).empty()
             let textarea = $('<textarea></textarea>').val(value).addClass('txt-area-' + idx)
@@ -157,14 +183,13 @@ function VotePage(){
         }
     }
 
-    // if (error) return `Submission error! ${error.message}`;
+    if (error) return `Submission error! ${error.message}`;
 
-    // if(vote_result.loading || loading || update_info.loading || delete_info.loading){
-    //     return <div>Loading..</div>
-    // } 
+    if (vote_result.loading || loading || update_info.loading || delete_info.loading || axiosWait) {
+        return <div>Loading..</div>
+    }
 
-    // if (vote_result.error) return `Fetch error! ${vote_result.error.message}`;    
-
+    if (vote_result.error) return `Fetch error! ${vote_result.error.message}`;
     // const characters = data.charactersByIds
     // if (characters[0].id == null){
     //     return (
@@ -173,106 +198,104 @@ function VotePage(){
     //         </div>
     //     )
     // }
-    // students = course.StudentGroupDetail.Group.Students
-    // students.forEach(function (student) {
-    //     student.up = false
-    //     student.description = ""
-    // });
-    // setVotes(students)
-    setCourse("testing")
-    console.log(course)
-    return(
+
+    const checkForm = ()=>{
+        if(votes.length - 1 === vote_result.data.votes.votes.length)
+            return null
+        else{
+            return (
+                <form>
+                    <Accordion defaultActiveKey="0">
+                        {votes?.map((s, index) => {
+                            if(vote_result.data.votes.votes?.some(vote => vote.studentID_voted === s.StudentNumber) || s.StudentNumber === user['User']['UserName'])
+                            return
+                            else
+                            return (
+                                <Accordion.Item eventKey={index} key={s.StudentNumber}>
+                                    <Accordion.Header>
+                                        <div className="d-flex justify-content-between w-100">
+                                            <div>
+                                                <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
+                                                <div>{s.Name}</div>
+                                            </div>
+                                            <div>
+                                                <label htmlFor="">UP</label>
+                                                <input type="checkbox" checked={s.up} id="" onChange={(e) => {
+                                                    setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
+                                                        ...x,
+                                                        up: e.target.checked
+                                                    } : x))
+                                                }} />
+                                            </div>
+                                        </div>
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                        <textarea className="w-100" name="" id="" cols="30" rows="10" onChange={(e) => {
+                                            setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
+                                                ...x,
+                                                description: e.target.value
+                                            } : x))
+                                        }} placeholder="Description">
+                                            {s.description}
+                                        </textarea>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            )
+                        })}
+
+                    </Accordion>
+                    <div className="d-flex justify-content-end">
+                        <button onClick={submitVote} className="btn btn-primary">Vote</button>
+                    </div>
+                </form>
+            )
+        }
+    }
+
+    return (
         <div >
             <NavBar />
             <div className="container m-auto my-4">
-            <form  onSubmit={submitVote}>
-            <Accordion defaultActiveKey="0">
-                {students.map((s,index) =>{
-                    return (
-                        <Accordion.Item eventKey={index} key={s.StudentNumber}>
-                            <Accordion.Header>
-                                <div className="d-flex justify-content-between w-100">
-                                    <div>
-                                        <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
-                                        <div>{s.Name}</div>
+                {checkForm()}
+                <br />
+                <Accordion defaultActiveKey="0">
+                    {vote_result.data.votes.votes?.map((vote, index) => {
+                        let className = 'btn-show-txt-area-' + index
+                        let student = votes.filter(function (data) {
+                            return data.StudentNumber === vote.studentID_voted
+                            })[0]
+                        return (
+                            <Accordion.Item eventKey={index}>
+                                <Accordion.Header>
+                                    <div className="d-flex justify-content-between w-100">
+                                        <div style={{ maxWidth: "150px" }}>
+                                            <div>
+                                                <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${
+                                                    student.PictureId
+                                                }`} alt="" />
+                                            </div>
+                                            <div>{student.Name}</div>
+                                            <div>{vote.date}</div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label htmlFor="">UP</label>
-                                        <input type="checkbox" checked={s.up} id="" onChange={(e)=>{
-                                            setVotes((currentVote)=> currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
-                                                ...x,
-                                                up : e.target.checked
-                                            } : x))
-                                        }}/>
-                                    </div>
-                                </div>
-                            </Accordion.Header>
-                            <Accordion.Body>
-                                <textarea className="w-100" name="" id="" cols="30" rows="10" onChange={(e)=>{
-                                    setVotes((currentVote)=> currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
-                                        ...x,
-                                        description : e.target.value
-                                    } : x))
-                                }} placeholder="Description">
-                                    {s.description}
-                                </textarea>
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    )
-                })}
-            
-            </Accordion>
-            <div className="d-flex justify-content-end">
-                <button className="btn btn-primary">Vote</button>
-            </div>
-            </form>
 
-            <br />
-            <Accordion defaultActiveKey="0">
-                {vote_result.data.votes?.map((vote,index)=>{
-                    let className = 'btn-show-txt-area-' + index
-                    return(
-                        <Accordion.Item eventKey={index}>
-                            <Accordion.Header>
-                                <div className="d-flex justify-content-between w-100">
-                                    <div style={{maxWidth:"150px"}}>
-                                        <div>{vote.studentID_voted}</div>
-                                        <div>{vote.date}</div>
-                                    </div>
-                                </div>
-                                
-                            </Accordion.Header>
-                            <Accordion.Body>
-                                {/* if (!showArea[index]) { */}
+                                </Accordion.Header>
+                                <Accordion.Body>
                                     <div className={className} onClick={() => handleClick(index)}>
                                         <div>
                                             {vote.description}
                                         </div>
-                                        
+
                                     </div>
                                     <div>
-                                        <Button variant="primary" onClick={(e)=>editVote(e, vote.id, index)}>Update</Button>
-                                        <Button variant="danger" onClick={(e)=>removeVote(e, vote.id)}>Delete</Button> 
+                                        <Button variant="primary" onClick={(e) => editVote(e, vote.studentID_voted, index)}>Update</Button>
+                                        <Button variant="danger" onClick={(e) => removeVote(e, vote.studentID_voted)}>Delete</Button>
                                     </div>
-                                        
-                                {/* } */}
-                                {/* else{
-                                    <div>
-                                        <textarea name="" id="" cols="30" rows="10">
-                                            {vote.description}
-                                        </textarea>
-                                        <div>
-                                            <Button variant="primary" onClick={(e)=>editVote(e, vote.id, "update bro")}>Update</Button>
-                                            <Button variant="danger" onClick={(e)=>removeVote(e, vote.id)}>Delete</Button> 
-                                        </div>
-                                    </div>    
-                                } */}
-                                
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    )
-                })}
-            </Accordion>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        )
+                    })}
+                </Accordion>
             </div>
         </div>
     )
