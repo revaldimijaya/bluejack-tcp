@@ -30,14 +30,15 @@ function VotePage() {
         await axios.get(url, { params })
             .then((res) => {
                 setCourse(res.data.filter(function (data) {
-                    return data.StudentGroupDetail.Group.Id === "004428a3-2d9c-eb11-90f0-d8d385fce79e"
+                    return data.StudentGroupDetail.Group.Id === "b3b461a8-2c9c-eb11-90f0-d8d385fce79e"
                 })[0])
                 setAxiosWait(false)
             })
             .catch((error) => { }
             )
     }
-
+    // "004428a3-2d9c-eb11-90f0-d8d385fce79e"
+    // "b3b461a8-2c9c-eb11-90f0-d8d385fce79e"
     useEffect(() => {
         fetchCourse()
     }, [])
@@ -216,7 +217,17 @@ function VotePage() {
                                         <div className="d-flex justify-content-between w-100">
                                             <div>
                                                 <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
-                                                <div>{s.Name}</div>
+
+                                                {(() => {
+                                                    if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === s.StudentNumber)){
+                                                        return (
+                                                            <div>{s.Name} voted you</div>
+                                                        )
+                                                    }
+                                                    
+                                                    return <div>{s.Name}</div>;
+                                                })()}
+                                                
                                             </div>
                                             <div>
                                                 <label htmlFor="">UP</label>
@@ -251,7 +262,7 @@ function VotePage() {
             )
         }
     }
-
+    console.log(vote_result.data.votes.re_voted)
     return (
         <div >
             <NavBar />
@@ -274,7 +285,17 @@ function VotePage() {
                                                     student.PictureId
                                                 }`} alt="" />
                                             </div>
-                                            <div>{student.Name}</div>
+
+                                            {(() => {
+                                                if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === student.StudentNumber)){
+                                                    return (
+                                                        <div>{student.Name} voted you</div>
+                                                    )
+                                                }
+                                                
+                                                return <div>{student.Name}</div>;
+                                            })()}
+
                                             <div>{vote.date}</div>
                                         </div>
                                     </div>
