@@ -1,5 +1,6 @@
 import { Accordion, Button } from "react-bootstrap"
 import NavBar from "../components/NavBar"
+import Error from  "../components/Error"
 import { gql, useQuery, useMutation } from '@apollo/client'
 import { useState, useEffect } from "react"
 import axios from 'axios'
@@ -262,10 +263,11 @@ function VotePage() {
             )
         }
     }
-    console.log(vote_result.data.votes.re_voted)
+
     return (
         <div >
             <NavBar />
+            <Error type="Vote empty" message="vote is empty"/>
             <div className="container m-auto my-4">
                 {checkForm()}
                 <br />
