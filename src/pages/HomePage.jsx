@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react' 
 import NavBar from "../components/NavBar"
 import axios from 'axios'
+import { Link } from 'react-router-dom';
 
 function HomePage() {
     const storage = localStorage.getItem('user')
@@ -10,7 +11,6 @@ function HomePage() {
     const [courses, setCourses] = useState([])
 
     const fetchCourse = async() => {
-        console.log('called')
         const params = {
             'semesterId': semesterId,
             'binusianNumber': user['User']['UserName']
@@ -19,7 +19,6 @@ function HomePage() {
         const result = await axios.get(url, { params })
             .then((res) => {
                 setCourses(res.data)
-                console.log(res.data)
             })
             .catch((error) => {}
         ) 
@@ -42,7 +41,7 @@ function HomePage() {
                                 <div className="card-body">
                                     <h5 className="card-title">{course.CourseCode} - {course.ClassName} </h5>
                                     <p className="card-text">{course.CourseName}</p>
-                                    <a href="/" className="btn btn-primary">View Group</a>
+                                    <Link to={url} className="btn btn-primary">View Group</Link>
                                 </div>
                             </div>
                 })}

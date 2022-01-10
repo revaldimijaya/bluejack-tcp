@@ -67,7 +67,7 @@ function App() {
         <Route path="/home">
           <HomePage />
         </Route>
-        <Route path="/vote">
+        <Route path="/vote/:id">
           <VotePage />
         </Route>
         <Route path="/">

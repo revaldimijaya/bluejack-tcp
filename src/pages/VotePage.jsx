@@ -5,24 +5,20 @@ import { gql, useQuery, useMutation } from '@apollo/client'
 import { useState, useEffect } from "react"
 import axios from 'axios'
 import $ from 'jquery'
+import {useParams, Redirect} from 'react-router-dom'
 
 function VotePage() {
-    // const [votes, setVotes] = useState([
-    //     {student_id: "2301873473", up: false, description: ""},
-    //     {student_id: "2323444422", up: false, description: ""},
-    //     {student_id: "2344233424", up: false, description: ""}
-    // ]);
-
+    let {id} = useParams();
     const storage = localStorage.getItem('user')
     const user = JSON.parse(storage)
     const semesterId = 'e22236e3-72ff-4786-b4ac-b33c9c7fc82a'
     const url = 'https://laboratory.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
     const [course, setCourse] = useState()
     const [votes, setVotes] = useState([])
+    const [errorMessage, setErrorMessage] = useState("")
     const [axiosWait, setAxiosWait] = useState(false)
 
     const fetchCourse = async () => {
-        console.log('called')
         const params = {
             'semesterId': semesterId,
             'binusianNumber': user['User']['UserName']
@@ -31,7 +27,7 @@ function VotePage() {
         await axios.get(url, { params })
             .then((res) => {
                 setCourse(res.data.filter(function (data) {
-                    return data.StudentGroupDetail.Group.Id === "b3b461a8-2c9c-eb11-90f0-d8d385fce79e"
+                    return data.StudentGroupDetail.Group.Id === id
                 })[0])
                 setAxiosWait(false)
             })
@@ -57,8 +53,10 @@ function VotePage() {
 
     const submitVote = (event) => {
         event.preventDefault()
+        let isVote = false
         votes.forEach((vote)=>{
             if(vote.up){
+                isVote = true
                 create_vote({
                     variables: {
                         groupID: course.StudentGroupDetail.Group.Id,
@@ -68,7 +66,10 @@ function VotePage() {
                     }
                 });
             }
-        })   
+        })
+        if (isVote == false){
+            setErrorMessage("Vote is empty")
+        }
     }
 
     const editVote = (event, id, index) => {
@@ -93,10 +94,6 @@ function VotePage() {
         });
 
     }
-
-    // const update_show_state = (index) => {
-    //     setShowArea(flag=>flag.map((x,idx)=>idx === index ? !x : x))
-    // }
 
     const CREATE_VOTE = gql`
         mutation createNewVote($groupID: ID!, $student_voted: ID!,$studentID_voter: ID!, $desc: String! ){
@@ -188,18 +185,23 @@ function VotePage() {
     if (error) return `Submission error! ${error.message}`;
 
     if (vote_result.loading || loading || update_info.loading || delete_info.loading || axiosWait) {
-        return <div>Loading..</div>
+        return(
+            <div>
+                <NavBar />
+                Loading..
+            </div>
+        )   
     }
 
-    if (vote_result.error) return `Fetch error! ${vote_result.error.message}`;
-    // const characters = data.charactersByIds
-    // if (characters[0].id == null){
-    //     return (
-    //         <div>
-    //             No Favoritos
-    //         </div>
-    //     )
-    // }
+    if (vote_result.error){
+        return(
+            <div>
+                <NavBar />
+                {`No Data: ${vote_result.error.message}`}
+            </div>
+        )
+            
+    }
 
     const checkForm = ()=>{
         if(votes.length - 1 === vote_result.data.votes.votes.length)
@@ -215,6 +217,7 @@ function VotePage() {
                             return (
                                 <Accordion.Item eventKey={index} key={s.StudentNumber}>
                                     <Accordion.Header>
+                                        <label className="position-absolute w-100 h-100" htmlFor={s.StudentNumber}></label>
                                         <div className="d-flex justify-content-between w-100">
                                             <div>
                                                 <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
@@ -231,8 +234,8 @@ function VotePage() {
                                                 
                                             </div>
                                             <div>
-                                                <label htmlFor="">UP</label>
-                                                <input type="checkbox" checked={s.up} id="" onChange={(e) => {
+                                                <input id={s.StudentNumber} type="checkbox" checked={s.up} className="d-none" onChange={(e) => {
+                                                    console.log(s.up)
                                                     setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
                                                         ...x,
                                                         up: e.target.checked
@@ -240,7 +243,10 @@ function VotePage() {
                                                 }} />
                                             </div>
                                         </div>
+                                        
                                     </Accordion.Header>
+                                    
+                                    
                                     <Accordion.Body>
                                         <textarea className="w-100" name="" id="" cols="30" rows="10" onChange={(e) => {
                                             setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
@@ -267,7 +273,7 @@ function VotePage() {
     return (
         <div >
             <NavBar />
-            <Error type="Vote empty" message="vote is empty"/>
+            {errorMessage && <Error type="Vote empty" message={errorMessage}/>}
             <div className="container m-auto my-4">
                 {checkForm()}
                 <br />
