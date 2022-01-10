@@ -211,7 +211,7 @@ function VotePage() {
                 <div>
                 <h5 style={{color:'#777777'}}>Unvoted Members</h5>
                 <form>
-                    <Accordion defaultActiveKey="0">
+                    <Accordion defaultActiveKey={['0']} alwaysOpen>
                         {votes?.map((s, index) => {
                             if(vote_result.data.votes.votes?.some(vote => vote.studentID_voted === s.StudentNumber) || s.StudentNumber === user['User']['UserName'])
                             return
@@ -277,18 +277,14 @@ function VotePage() {
         }
     }
 
-    console.log(course)
-
-    return (
-        
+    return (  
         <div >
             <NavBar />
-            
             {messageState[0] && <Error type="Error" messageState={messageState}/>}
             <h4 className="text-center pt-4" style={{color:'#18181b'}}>{course.CourseCode} - {course.CourseName} - {course.ClassName}</h4>
             <div className="container m-auto my-4">
                 <h5 style={{color:'#777777'}}>Voted Members</h5>
-                <Accordion defaultActiveKey="0">
+                <Accordion defaultActiveKey={['0']} alwaysOpen="true">
                     {vote_result.data.votes.votes?.map((vote, index) => {
                         let className = 'btn-show-txt-area-' + index
                         let student = votes.filter(function (data) {
