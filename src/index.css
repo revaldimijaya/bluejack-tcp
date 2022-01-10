@@ -15,3 +15,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+textarea {
+  border: solid lightgray 1px;
+  padding: 2%;
+  resize: none;
+}
+
+textarea:focus {
+  outline: 0;
+  
+}

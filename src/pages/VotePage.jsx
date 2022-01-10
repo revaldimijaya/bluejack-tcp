@@ -177,7 +177,7 @@ function VotePage() {
         if ($('.btn-show-txt-area-' + idx).children().is('div')) {
             let value = $('.btn-show-txt-area-' + idx).find('div').text()
             $('.btn-show-txt-area-' + idx).empty()
-            let textarea = $('<textarea></textarea>').val(value).addClass('txt-area-' + idx).addClass('w-100')
+            let textarea = $('<textarea></textarea>').val(value).addClass('txt-area-' + idx).addClass('w-100 ')
             $('.btn-show-txt-area-' + idx).append(textarea)
         }
     }
@@ -208,6 +208,8 @@ function VotePage() {
             return null
         else{
             return (
+                <div>
+                <h5 style={{color:'#777777'}}>Unvoted Members</h5>
                 <form>
                     <Accordion defaultActiveKey="0">
                         {votes?.map((s, index) => {
@@ -224,17 +226,22 @@ function VotePage() {
                                         } : x))
                                     }}>
                                         <div className="d-flex justify-content-between w-100">
-                                            <div>
-                                                <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
+                                            <div className="d-flex">
+                                                <img className="px-2" src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
 
                                                 {(() => {
                                                     if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === s.StudentNumber)){
                                                         return (
-                                                            <div>{s.Name} voted you</div>
+                                                            <div className="px-2">
+                                                                <div className=""><strong>{s.StudentNumber} - {s.Name}</strong></div>
+                                                                <div className="py-2" style={{ color:"green" }}>Has Voted You</div>
+                                                                
+                                                            </div>
+                                                            
                                                         )
                                                     }
                                                     
-                                                    return <div>{s.Name}</div>;
+                                                    return <div className="px-2"><strong>{s.StudentNumber} - {s.Name}</strong></div>;
                                                 })()}
                                             
                                             </div>
@@ -265,17 +272,22 @@ function VotePage() {
                         <button onClick={submitVote} className="btn btn-primary my-2 px-3">Vote</button>
                     </div>
                 </form>
+                </div>
             )
         }
     }
 
+    console.log(course)
+
     return (
+        
         <div >
             <NavBar />
+            
             {messageState[0] && <Error type="Error" messageState={messageState}/>}
+            <h4 className="text-center pt-4" style={{color:'#18181b'}}>{course.CourseCode} - {course.CourseName} - {course.ClassName}</h4>
             <div className="container m-auto my-4">
-                {checkForm()}
-                <br />
+                <h5 style={{color:'#777777'}}>Voted Members</h5>
                 <Accordion defaultActiveKey="0">
                     {vote_result.data.votes.votes?.map((vote, index) => {
                         let className = 'btn-show-txt-area-' + index
@@ -296,17 +308,17 @@ function VotePage() {
                                                 {(() => {
                                                     if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === student.StudentNumber)){
                                                         return (
-                                                            <div >
-                                                                <div className="py-2">{student.Name}</div>
+                                                            <div className="px-2">
+                                                                <div className=""><strong>{student.StudentNumber} - {student.Name}</strong></div>
                                                                 <div className="py-2" style={{ color:"green" }}>Has Voted You</div>
                                                             </div>
                                                         )
                                                     }
                                                     
-                                                    return <div className="py-2">{student.Name}</div>;
+                                                    return <div className="px-2"><strong>{student.StudentNumber} - {student.Name}</strong></div>;
                                                 })()}
 
-                                                <div className="py-2">{vote.date}</div>
+                                                <div className="px-2">{vote.date}</div>
 
                                             </div>
                                         </div>
@@ -315,20 +327,24 @@ function VotePage() {
                                 </Accordion.Header>
                                 <Accordion.Body>
                                     <div className={className} onClick={() => handleClick(index)}>
-                                        <div>
+                                        <div role="button">
                                             {vote.description}
                                         </div>
 
                                     </div>
                                     <div>
-                                        <Button variant="primary" onClick={(e) => editVote(e, vote.studentID_voted, index)}>Update</Button>
-                                        <Button variant="danger" onClick={(e) => removeVote(e, vote.studentID_voted)}>Delete</Button>
+                                        
+                                        <Button className="my-2" variant="primary" onClick={(e) => editVote(e, vote.studentID_voted, index)}>Update</Button>
+                                        
+                                        <Button className="mx-2 my-2" variant="danger" onClick={(e) => removeVote(e, vote.studentID_voted)}>Delete</Button>
                                     </div>
                                 </Accordion.Body>
                             </Accordion.Item>
                         )
                     })}
                 </Accordion>
+                <br />
+                {checkForm()}
             </div>
         </div>
     )

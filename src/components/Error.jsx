@@ -20,11 +20,9 @@ function Error({ type, messageState }) {
     }, [message]) // executes every time `message` changes. Adjust as needed
     if(!visible) return null
     return (
-       <div>
-         <p>
-             <strong>{type}:</strong> {message}
-         </p>
-     </div>
+      <div className="alert alert-danger m-0">
+        <strong>{type}:</strong> {message}
+      </div>
     )
  }
 

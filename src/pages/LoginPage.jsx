@@ -2,11 +2,13 @@ import react, { useEffect, useState } from "react"
 import {User} from '../models/User'
 import { Redirect, Route } from "react-router";
 import axios from 'axios';
+import Error from  "../components/Error";
 
 function LoginPage({setUser}) {
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
-
+    const messageState = useState("");
+    
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
@@ -25,6 +27,7 @@ function LoginPage({setUser}) {
           })
         .then((res) => res.json())
         .catch((error) =>{
+            messageState[1]("Invalid username / password!")
             return null;
         })
         
@@ -78,31 +81,34 @@ function LoginPage({setUser}) {
     return (
         
         <div className="d-flex justify-content-center align-items-center">
-            <form onSubmit={handleSubmit} className="d-flex flex-column justify-content-center align-items-center shadow-sm bg-white rounded" style={{minHeight:"350px", minWidth:"350px"}}>
-                
-                <div className="form-group p-1">
+            <div className="d-flex flex-column justify-content-start align-items-center shadow-sm bg-white rounded p-0" style={{minHeight:"350px", minWidth:"350px"}}>
+                <div className="col-sm-12 col-12 mb-4 d-flex justify-content-start">
                     <div className="col-sm-12 d-flex align-items-stretch justify-content-start">
-                        <div className="col-sm-2 d-flex justify-content-end">
+                        <div className="col-sm-2 d-flex justify-content-start">
                             <img src="https://academic-slc.apps.binus.ac.id/assets/ribbon.png" className="img-fluid" alt=""/>
                         </div>
-                        <div className="col-sm-8 d-flex justify-content-start p-3">
+                        <div className="col-sm-7 col-7 d-flex justify-content-start p-3">
                             <img src="https://academic-slc.apps.binus.ac.id/assets/logo.png" className="img-fluid" alt=""/>
                         </div>
-                        <div className="col-sm-2"></div>
+                        <div className="col-sm-3 col-3"></div>
                     </div>
                 </div>
 
-                <div className="form-group p-1" style={{minWidth:"250px"}}>
-                    <input type="text" name="username" className="form-control" placeholder="Username" onChange={e => setUserName(e.target.value)}/>
-                </div>
-                <div className="form-group p-1" style={{minWidth:"250px"}}>
-                    <input type="password" name="password" className="form-control" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
-                </div>
-                <div className="form-group d-flex justify-content-center p-1" >
-                    <button type="submit" className="btn btn-primary d-flex justify-content-center mt-4" style={{minWidth:"250px"}}>Login</button>
-                </div>
-
-            </form>
+                <form onSubmit={handleSubmit} className="py-1 mb-2">
+                    <div>
+                        <div className="form-group p-1" style={{minWidth:"250px"}}>
+                            <input type="text" name="username" className="form-control" placeholder="Username" onChange={e => setUserName(e.target.value)}/>
+                        </div>
+                        <div className="form-group p-1" style={{minWidth:"250px"}}>
+                            <input type="password" name="password" className="form-control" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
+                        </div>
+                        {messageState[0] && <Error type="Error" messageState={messageState} className="my-2"/>}
+                        <div className="form-group d-flex justify-content-center p-1" >
+                            <button type="submit" className="btn btn-primary d-flex justify-content-center mt-1" style={{minWidth:"250px"}}>Login</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     )
 }
