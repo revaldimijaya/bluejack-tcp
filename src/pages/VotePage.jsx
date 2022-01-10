@@ -13,9 +13,9 @@ function VotePage() {
     const user = JSON.parse(storage)
     const semesterId = 'e22236e3-72ff-4786-b4ac-b33c9c7fc82a'
     const url = 'https://laboratory.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
-    const [course, setCourse] = useState()
+    const [course, setCourse] = useState(null)
     const [votes, setVotes] = useState([])
-    const [errorMessage, setErrorMessage] = useState("")
+    const messageState = useState("")
     const [axiosWait, setAxiosWait] = useState(false)
 
     const fetchCourse = async () => {
@@ -55,7 +55,7 @@ function VotePage() {
         event.preventDefault()
         let isVote = false
         votes.forEach((vote)=>{
-            if(vote.up){
+            if(vote.up && vote.description !== ""){
                 isVote = true
                 create_vote({
                     variables: {
@@ -68,7 +68,7 @@ function VotePage() {
             }
         })
         if (isVote == false){
-            setErrorMessage("Vote is empty")
+            messageState[1]("Vote is empty")
         }
     }
 
@@ -216,8 +216,13 @@ function VotePage() {
                             else
                             return (
                                 <Accordion.Item eventKey={index} key={s.StudentNumber}>
-                                    <Accordion.Header>
-                                        <label className="position-absolute w-100 h-100" htmlFor={s.StudentNumber}></label>
+                                    <Accordion.Header onClick={(e) => {
+                                        console.log(s.up)
+                                        setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
+                                            ...x,
+                                            up: !x.up
+                                        } : x))
+                                    }}>
                                         <div className="d-flex justify-content-between w-100">
                                             <div>
                                                 <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
@@ -234,13 +239,7 @@ function VotePage() {
                                                 
                                             </div>
                                             <div>
-                                                <input id={s.StudentNumber} type="checkbox" checked={s.up} className="d-none" onChange={(e) => {
-                                                    console.log(s.up)
-                                                    setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
-                                                        ...x,
-                                                        up: e.target.checked
-                                                    } : x))
-                                                }} />
+                                                <input id={s.StudentNumber} type="checkbox" checked={s.up} className="d-none" />
                                             </div>
                                         </div>
                                         
@@ -273,7 +272,7 @@ function VotePage() {
     return (
         <div >
             <NavBar />
-            {errorMessage && <Error type="Vote empty" message={errorMessage}/>}
+            {messageState[0] && <Error type="Error" messageState={messageState}/>}
             <div className="container m-auto my-4">
                 {checkForm()}
                 <br />

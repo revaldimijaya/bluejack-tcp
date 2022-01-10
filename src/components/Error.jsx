@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react"
 
-function Error({ type, message }) {
+function Error({ type, messageState }) {
     const [visible, setVisible] = useState(false)
+    const message = messageState[0];
+    const setMessage = messageState[1];
     useEffect(() => {
       // message is empty (meaning no errors). Adjust as needed
       if(!message){
@@ -12,6 +14,7 @@ function Error({ type, message }) {
       setVisible(true)
       const timer = setTimeout(() => {
         setVisible(false)
+        setMessage("")
       }, 5000);
       return () => clearTimeout(timer);
     }, [message]) // executes every time `message` changes. Adjust as needed
