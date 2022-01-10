@@ -177,7 +177,7 @@ function VotePage() {
         if ($('.btn-show-txt-area-' + idx).children().is('div')) {
             let value = $('.btn-show-txt-area-' + idx).find('div').text()
             $('.btn-show-txt-area-' + idx).empty()
-            let textarea = $('<textarea></textarea>').val(value).addClass('txt-area-' + idx)
+            let textarea = $('<textarea></textarea>').val(value).addClass('txt-area-' + idx).addClass('w-100')
             $('.btn-show-txt-area-' + idx).append(textarea)
         }
     }
@@ -218,10 +218,10 @@ function VotePage() {
                                 <Accordion.Item eventKey={index} key={s.StudentNumber}>
                                     <Accordion.Header>
                                         <label className="position-absolute w-100 h-100" htmlFor={s.StudentNumber}></label>
-                                        <div className="d-flex justify-content-between w-100">
-                                            <div>
-                                                <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
-
+                                        <div  className="d-flex justify-content-between w-100">
+                                            <div className="d-flex" >
+                                                <img className="px-2" src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
+                                                 
                                                 {(() => {
                                                     if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === s.StudentNumber)){
                                                         return (
@@ -231,7 +231,7 @@ function VotePage() {
                                                     
                                                     return <div>{s.Name}</div>;
                                                 })()}
-                                                
+                                            
                                             </div>
                                             <div>
                                                 <input id={s.StudentNumber} type="checkbox" checked={s.up} className="d-none" onChange={(e) => {
@@ -263,7 +263,7 @@ function VotePage() {
 
                     </Accordion>
                     <div className="d-flex justify-content-end">
-                        <button onClick={submitVote} className="btn btn-primary">Vote</button>
+                        <button onClick={submitVote} className="btn btn-primary my-2 px-3">Vote</button>
                     </div>
                 </form>
             )
@@ -287,24 +287,29 @@ function VotePage() {
                             <Accordion.Item eventKey={index}>
                                 <Accordion.Header>
                                     <div className="d-flex justify-content-between w-100">
-                                        <div style={{ maxWidth: "150px" }}>
-                                            <div>
+                                        <div className="d-flex">
+                                            <div className="px-2">
                                                 <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${
                                                     student.PictureId
                                                 }`} alt="" />
                                             </div>
+                                            <div className="d-flex flex-column">
+                                                {(() => {
+                                                    if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === student.StudentNumber)){
+                                                        return (
+                                                            <div >
+                                                                <div className="py-2">{student.Name}</div>
+                                                                <div className="py-2" style={{ color:"green" }}>Has Voted You</div>
+                                                            </div>
+                                                        )
+                                                    }
+                                                    
+                                                    return <div className="py-2">{student.Name}</div>;
+                                                })()}
 
-                                            {(() => {
-                                                if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === student.StudentNumber)){
-                                                    return (
-                                                        <div>{student.Name} voted you</div>
-                                                    )
-                                                }
-                                                
-                                                return <div>{student.Name}</div>;
-                                            })()}
+                                                <div className="py-2">{vote.date}</div>
 
-                                            <div>{vote.date}</div>
+                                            </div>
                                         </div>
                                     </div>
 
