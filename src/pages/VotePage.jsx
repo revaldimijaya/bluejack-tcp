@@ -1,4 +1,5 @@
-import { Accordion, Button } from "react-bootstrap"
+import { Button, OverlayTrigger, Tooltip, Image} from "react-bootstrap"
+import Accordion from 'react-bootstrap/Accordion'
 import NavBar from "../components/NavBar"
 import Error from  "../components/Error"
 import { gql, useQuery, useMutation } from '@apollo/client'
@@ -70,6 +71,10 @@ function VotePage() {
         if (isVote == false){
             messageState[1]("Vote is empty")
         }
+        setVotes((currentVote) => currentVote.map(x =>{
+            x.up = false
+            return x
+        }))
     }
 
     const editVote = (event, id, index) => {
@@ -210,16 +215,44 @@ function VotePage() {
             return (
                 <div>
                 <h5 style={{color:'#777777'}}>Unvoted Members</h5>
+                <OverlayTrigger
+                    placement="right"
+                    overlay={
+                    <Tooltip id="button-tooltip-2">
+                        Help:
+                        1. Click on member's block, then the accordion will open and show input field below the member's info
+                        2. Input description about their contribution in the project
+                        3. Click Vote button on the bottom to submit the inputted votes
+                        4. The program will submit the votes if the accordion in the open state and the description is not empty
+                        
+                    </Tooltip>}
+                >
+                    {({ ref, ...triggerHandler }) => (
+                    <Button
+                        variant="light"
+                        ref={ref}
+                        {...triggerHandler}
+                        className="d-inline-flex align-items-center"
+                    >
+                        
+                        Help
+                        {/* <Image
+                        ref={ref}
+                        roundedCircle
+                        src=""
+                        /> */}
+                    </Button>
+                    )}
+                </OverlayTrigger>
                 <form>
-                    <Accordion defaultActiveKey={['0']} alwaysOpen>
                         {votes?.map((s, index) => {
                             if(vote_result.data.votes.votes?.some(vote => vote.studentID_voted === s.StudentNumber) || s.StudentNumber === user['User']['UserName'])
                             return
                             else
                             return (
-                                <Accordion.Item eventKey={index} key={s.StudentNumber}>
+                                <Accordion defaultActiveKey={-1} alwaysOpen>
+                                <Accordion.Item eventKey={index}>
                                     <Accordion.Header onClick={(e) => {
-                                        console.log(s.up)
                                         setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
                                             ...x,
                                             up: !x.up
@@ -264,10 +297,9 @@ function VotePage() {
                                         </textarea>
                                     </Accordion.Body>
                                 </Accordion.Item>
+                                </Accordion>
                             )
                         })}
-
-                    </Accordion>
                     <div className="d-flex justify-content-end">
                         <button onClick={submitVote} className="btn btn-primary my-2 px-3">Vote</button>
                     </div>
@@ -284,7 +316,7 @@ function VotePage() {
             <h4 className="text-center pt-4" style={{color:'#18181b'}}>{course.CourseCode} - {course.CourseName} - {course.ClassName}</h4>
             <div className="container m-auto my-4">
                 <h5 style={{color:'#777777'}}>Voted Members</h5>
-                <Accordion defaultActiveKey={['0']} alwaysOpen="true">
+                <Accordion defaultActiveKey={['0']}>
                     {vote_result.data.votes.votes?.map((vote, index) => {
                         let className = 'btn-show-txt-area-' + index
                         let student = votes.filter(function (data) {
@@ -329,10 +361,30 @@ function VotePage() {
 
                                     </div>
                                     <div>
+
+                                        <OverlayTrigger
+                                        key='bottom'
+                                        placement='bottom'
+                                        overlay={
+                                            <Tooltip id={`tooltip-bottom`}>
+                                                Click on description above to edit the description. After finish editing new description, update new description to system by clicking 'Update' button
+                                            </Tooltip>
+                                        }
+                                        >
+                                            <Button className="my-2" variant="primary" onClick={(e) => editVote(e, vote.studentID_voted, index)}>Update</Button>
+                                        </OverlayTrigger>
                                         
-                                        <Button className="my-2" variant="primary" onClick={(e) => editVote(e, vote.studentID_voted, index)}>Update</Button>
-                                        
-                                        <Button className="mx-2 my-2" variant="danger" onClick={(e) => removeVote(e, vote.studentID_voted)}>Delete</Button>
+                                        <OverlayTrigger
+                                            key='right'
+                                            placement='right'
+                                            overlay={
+                                                <Tooltip id={`tooltip-right`}>
+                                                Delete vote for <strong>{vote.studentID_voted}</strong>.
+                                                </Tooltip>
+                                            }
+                                            >
+                                            <Button className="mx-2 my-2" variant="danger" onClick={(e) => removeVote(e, vote.studentID_voted)}>Delete</Button>
+                                        </OverlayTrigger> 
                                     </div>
                                 </Accordion.Body>
                             </Accordion.Item>
