@@ -218,12 +218,14 @@ function VotePage() {
                 <OverlayTrigger
                     placement="right"
                     overlay={
-                    <Tooltip id="button-tooltip-2">
+                    <Tooltip id="button-tooltip-2" className="w-100">
+                        <span>
                         Help:
                         1. Click on member's block, then the accordion will open and show input field below the member's info
                         2. Input description about their contribution in the project
                         3. Click Vote button on the bottom to submit the inputted votes
                         4. The program will submit the votes if the accordion in the open state and the description is not empty
+                        </span>
                         
                     </Tooltip>}
                 >
