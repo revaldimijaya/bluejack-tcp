@@ -7,6 +7,8 @@ import { useState, useEffect } from "react"
 import axios from 'axios'
 import $ from 'jquery'
 import {useParams, Redirect} from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
 function VotePage() {
     let {id} = useParams();
@@ -80,13 +82,17 @@ function VotePage() {
     const editVote = (event, id, index) => {
         event.preventDefault();
         let desc = $('.txt-area-' + index).val()
-        update_vote({
-            variables: {
-                voted: id,
-                voter: user['User']['UserName'],
-                description: desc
-            }
-        });
+        if(desc !== ''){
+            update_vote({
+                variables: {
+                    voted: id,
+                    voter: user['User']['UserName'],
+                    description: desc
+                }
+            });
+        }else{
+            $('.txt-area-' + index).addClass('input-error')
+        }
 
     }
     const removeVote = (event, id) => {
@@ -218,14 +224,13 @@ function VotePage() {
                 <OverlayTrigger
                     placement="right"
                     overlay={
-                    <Tooltip id="button-tooltip-2" className="w-100">
-                        <span>
-                        Help:
-                        1. Click on member's block, then the accordion will open and show input field below the member's info
-                        2. Input description about their contribution in the project
-                        3. Click Vote button on the bottom to submit the inputted votes
-                        4. The program will submit the votes if the accordion in the open state and the description is not empty
-                        </span>
+                    <Tooltip style={{maxWidth:"500px", width:"500px"}} id="button-tooltip-2" className="w-100">
+                        <p className="text-left">
+                        1. Click on a member's block, then the accordion will open and display input field. <br />
+                        2. Input his/her contribution in the input field. (required)<br />
+                        3. Without closing the accordion, click the vote button to submit your vote. <br />
+                        4. The program can only submit 1 vote for 1 member at a time. <br />
+                        </p>
                         
                     </Tooltip>}
                 >
@@ -289,7 +294,7 @@ function VotePage() {
                                     
                                     
                                     <Accordion.Body>
-                                        <textarea className="w-100" name="" id="" cols="30" rows="10" onChange={(e) => {
+                                        <textarea className={`w-100 ${messageState[0]!=''?'input-error':''}`} name="" id="" cols="30" rows="10" onChange={(e) => {
                                             setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
                                                 ...x,
                                                 description: e.target.value
@@ -314,7 +319,6 @@ function VotePage() {
     return (  
         <div >
             <NavBar />
-            {messageState[0] && <Error type="Error" messageState={messageState}/>}
             <h4 className="text-center pt-4" style={{color:'#18181b'}}>{course.CourseCode} - {course.CourseName} - {course.ClassName}</h4>
             <div className="container m-auto my-4">
                 <h5 style={{color:'#777777'}}>Voted Members</h5>
@@ -356,9 +360,15 @@ function VotePage() {
 
                                 </Accordion.Header>
                                 <Accordion.Body>
-                                    <div className={className} onClick={() => handleClick(index)}>
-                                        <div role="button">
-                                            {vote.description}
+                                    <div className={`${className}`} onClick={() => handleClick(index)}>
+                                        <div role="button" className="d-flex justify-content-between">
+                                            <div>
+                                                {vote.description}
+                                            </div>
+                                            <div>
+                                                <FontAwesomeIcon icon={faEdit} />
+                                            </div>
+                                            
                                         </div>
 
                                     </div>
