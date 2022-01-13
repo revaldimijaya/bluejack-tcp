@@ -37,8 +37,7 @@ function VotePage() {
             .catch((error) => { }
             )
     }
-    // "004428a3-2d9c-eb11-90f0-d8d385fce79e"
-    // "b3b461a8-2c9c-eb11-90f0-d8d385fce79e"
+
     useEffect(() => {
         fetchCourse()
     }, [])
@@ -72,11 +71,13 @@ function VotePage() {
         })
         if (isVote == false){
             messageState[1]("Vote is empty")
-        }
-        setVotes((currentVote) => currentVote.map(x =>{
-            x.up = false
-            return x
-        }))
+        }else{
+            setVotes((currentVote) => currentVote.map(x =>{
+                x.up = false
+                return x
+            }))
+            messageState[1]("")
+        }  
     }
 
     const editVote = (event, id, index) => {
@@ -240,14 +241,8 @@ function VotePage() {
                         ref={ref}
                         {...triggerHandler}
                         className="d-inline-flex align-items-center"
-                    >
-                        
+                    > 
                         Help
-                        {/* <Image
-                        ref={ref}
-                        roundedCircle
-                        src=""
-                        /> */}
                     </Button>
                     )}
                 </OverlayTrigger>
@@ -321,7 +316,9 @@ function VotePage() {
             <NavBar />
             <h4 className="text-center pt-4" style={{color:'#18181b'}}>{course.CourseCode} - {course.CourseName} - {course.ClassName}</h4>
             <div className="container m-auto my-4">
-                <h5 style={{color:'#777777'}}>Voted Members</h5>
+                {vote_result.data.votes.votes.length > 0 &&
+                    <h5 style={{color:'#777777'}}>Voted Members</h5>
+                }
                 <Accordion defaultActiveKey={['0']}>
                     {vote_result.data.votes.votes?.map((vote, index) => {
                         let className = 'btn-show-txt-area-' + index
@@ -362,9 +359,9 @@ function VotePage() {
                                 <Accordion.Body>
                                     <div className={`${className}`} onClick={() => handleClick(index)}>
                                         <div role="button" className="d-flex justify-content-between">
-                                            <div>
+                                            <p style={{ overflowWrap: "break-word" }}>
                                                 {vote.description}
-                                            </div>
+                                            </p>
                                             <div>
                                                 <FontAwesomeIcon icon={faEdit} />
                                             </div>
