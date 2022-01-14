@@ -359,10 +359,10 @@ function VotePage() {
                                 <Accordion.Body>
                                     <div className={`${className}`} onClick={() => handleClick(index)}>
                                         <div role="button" className="d-flex justify-content-between">
-                                            <p style={{ overflowWrap: "break-word" }}>
+                                            <div style={{height:'100px'}} className="w-100 overflow-auto">
                                                 {vote.description}
-                                            </p>
-                                            <div>
+                                            </div>
+                                            <div className="mx-2">
                                                 <FontAwesomeIcon icon={faEdit} />
                                             </div>
                                             
