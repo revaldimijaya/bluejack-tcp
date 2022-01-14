@@ -7,6 +7,8 @@ import { useState, useEffect } from "react"
 import axios from 'axios'
 import $ from 'jquery'
 import {useParams, Redirect} from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
 function VotePage() {
     let {id} = useParams();
@@ -35,8 +37,7 @@ function VotePage() {
             .catch((error) => { }
             )
     }
-    // "004428a3-2d9c-eb11-90f0-d8d385fce79e"
-    // "b3b461a8-2c9c-eb11-90f0-d8d385fce79e"
+
     useEffect(() => {
         fetchCourse()
     }, [])
@@ -70,23 +71,29 @@ function VotePage() {
         })
         if (isVote == false){
             messageState[1]("Vote is empty")
-        }
-        setVotes((currentVote) => currentVote.map(x =>{
-            x.up = false
-            return x
-        }))
+        }else{
+            setVotes((currentVote) => currentVote.map(x =>{
+                x.up = false
+                return x
+            }))
+            messageState[1]("")
+        }  
     }
 
     const editVote = (event, id, index) => {
         event.preventDefault();
         let desc = $('.txt-area-' + index).val()
-        update_vote({
-            variables: {
-                voted: id,
-                voter: user['User']['UserName'],
-                description: desc
-            }
-        });
+        if(desc !== ''){
+            update_vote({
+                variables: {
+                    voted: id,
+                    voter: user['User']['UserName'],
+                    description: desc
+                }
+            });
+        }else{
+            $('.txt-area-' + index).addClass('input-error')
+        }
 
     }
     const removeVote = (event, id) => {
@@ -218,14 +225,13 @@ function VotePage() {
                 <OverlayTrigger
                     placement="right"
                     overlay={
-                    <Tooltip id="button-tooltip-2" className="w-100" style={{maxWidth:"350px"}}>
-                        <span>
-                        Help:
-                        1. Click on member's block, then the accordion will open and show input field below the member's info
-                        2. Input description about their contribution in the project
-                        3. Click Vote button on the bottom to submit the inputted votes
-                        4. The program will submit the votes if the accordion in the open state and the description is not empty
-                        </span>
+                    <Tooltip style={{maxWidth:"500px", width:"500px"}} id="button-tooltip-2" className="w-100">
+                        <p className="text-left">
+                        1. Click on a member's block, then the accordion will open and display input field. <br />
+                        2. Input his/her contribution in the input field. (required)<br />
+                        3. Without closing the accordion, click the vote button to submit your vote. <br />
+                        4. The program can only submit 1 vote for 1 member at a time. <br />
+                        </p>
                         
                     </Tooltip>}
                 >
@@ -235,14 +241,8 @@ function VotePage() {
                         ref={ref}
                         {...triggerHandler}
                         className="d-inline-flex align-items-center"
-                    >
-                        
+                    > 
                         Help
-                        {/* <Image
-                        ref={ref}
-                        roundedCircle
-                        src=""
-                        /> */}
                     </Button>
                     )}
                 </OverlayTrigger>
@@ -289,7 +289,7 @@ function VotePage() {
                                     
                                     
                                     <Accordion.Body>
-                                        <textarea className="w-100" name="" id="" cols="30" rows="10" onChange={(e) => {
+                                        <textarea className={`w-100 ${messageState[0]!=''?'input-error':''}`} name="" id="" cols="30" rows="10" onChange={(e) => {
                                             setVotes((currentVote) => currentVote.map(x => x.StudentNumber === s.StudentNumber ? {
                                                 ...x,
                                                 description: e.target.value
@@ -314,10 +314,11 @@ function VotePage() {
     return (  
         <div >
             <NavBar />
-            {messageState[0] && <Error type="Error" messageState={messageState}/>}
             <h4 className="text-center pt-4" style={{color:'#18181b'}}>{course.CourseCode} - {course.CourseName} - {course.ClassName}</h4>
             <div className="container m-auto my-4">
-                <h5 style={{color:'#777777'}}>Voted Members</h5>
+                {vote_result.data.votes.votes.length > 0 &&
+                    <h5 style={{color:'#777777'}}>Voted Members</h5>
+                }
                 <Accordion defaultActiveKey={['0']}>
                     {vote_result.data.votes.votes?.map((vote, index) => {
                         let className = 'btn-show-txt-area-' + index
@@ -356,9 +357,15 @@ function VotePage() {
 
                                 </Accordion.Header>
                                 <Accordion.Body>
-                                    <div className={className} onClick={() => handleClick(index)}>
-                                        <div role="button">
-                                            {vote.description}
+                                    <div className={`${className} justify-content-around `} onClick={() => handleClick(index)}>
+                                        <div role="button" className="d-flex justify-content-between w-100">
+                                            <div style={{ overflowWrap:"break-word", maxWidth:"95%"}} >
+                                                {vote.description}
+                                            </div>
+                                            <div className="mx-1">
+                                                <FontAwesomeIcon icon={faEdit} />
+                                            </div>
+                                            
                                         </div>
 
                                     </div>
