@@ -218,7 +218,7 @@ function VotePage() {
                 <OverlayTrigger
                     placement="right"
                     overlay={
-                    <Tooltip id="button-tooltip-2" className="w-100">
+                    <Tooltip id="button-tooltip-2" className="w-100" style={{maxWidth:"350px"}}>
                         <span>
                         Help:
                         1. Click on member's block, then the accordion will open and show input field below the member's info
