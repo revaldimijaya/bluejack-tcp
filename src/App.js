@@ -31,7 +31,7 @@ function App() {
   }
 
   const handleToken = async (token) => {
-    const ax = await axios.get(`https://laboratory.binus.ac.id/lapi/api/Binusmaya/Me`, {
+    const ax = await axios.get(`https://nar.binus.ac.id/lapi/api/Binusmaya/Me`, {
         headers:{
             authorization: `Bearer ${token}`
         }

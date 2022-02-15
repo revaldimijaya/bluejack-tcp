@@ -15,7 +15,7 @@ function VotePage() {
     const storage = localStorage.getItem('user')
     const user = JSON.parse(storage)
     const semesterId = 'e22236e3-72ff-4786-b4ac-b33c9c7fc82a'
-    const url = 'https://laboratory.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
+    const url = 'https://nar.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
     const [course, setCourse] = useState(null)
     const [votes, setVotes] = useState([])
     const messageState = useState("")
@@ -262,7 +262,7 @@ function VotePage() {
                                     }}>
                                         <div className="d-flex justify-content-between w-100">
                                             <div className="d-flex">
-                                                <img className="px-2" src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
+                                                <img className="px-2" src={`https://nar.binus.ac.id/lapi/api/Account/GetThumbnail?id=${s.PictureId}`} alt="" />
 
                                                 {(() => {
                                                     if (vote_result.data.votes.re_voted?.some(vote => vote.studentID_voter === s.StudentNumber)){
@@ -331,7 +331,7 @@ function VotePage() {
                                     <div className="d-flex justify-content-between w-100">
                                         <div className="d-flex">
                                             <div className="px-2">
-                                                <img src={`https://laboratory.binus.ac.id/lapi/API/Account/GetThumbnail?id=${
+                                                <img src={`https://nar.binus.ac.id/lapi/api/Account/GetThumbnail?id=${
                                                     student.PictureId
                                                 }`} alt="" />
                                             </div>

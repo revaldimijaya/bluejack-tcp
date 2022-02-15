@@ -7,7 +7,7 @@ function HomePage() {
     const storage = localStorage.getItem('user')
     const user = JSON.parse(storage)
     const semesterId = 'e22236e3-72ff-4786-b4ac-b33c9c7fc82a'
-    const url = 'https://laboratory.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
+    const url = 'https://nar.binus.ac.id/lapi/api/Binusmaya/GetStudentGroupsByNIM/'
     const [courses, setCourses] = useState([])
 
     const fetchCourse = async() => {

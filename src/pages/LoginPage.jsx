@@ -17,7 +17,7 @@ function LoginPage({setUser}) {
     };
 
     async function loginUser(credentials){
-        return fetch("https://laboratory.binus.ac.id/lapi/api/Account/LogOnBinusian", {
+        return fetch("https://nar.binus.ac.id/lapi/api/Account/LogOnBinusian", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ function LoginPage({setUser}) {
     }
 
     const handleToken = async (token) => {
-        const ax = await axios.get(`https://laboratory.binus.ac.id/lapi/api/Binusmaya/Me`, {
+        const ax = await axios.get(`https://nar.binus.ac.id/lapi/api/Binusmaya/Me`, {
             headers:{
                 authorization: `Bearer ${token}`
             }
